@@ -1,0 +1,11 @@
+database/data
+database/export.sql
+frontend/uploads/*
+.env
+.env.*
+node_modules
+*.log
+.git
+.claude
+.vscode
+mobile-app

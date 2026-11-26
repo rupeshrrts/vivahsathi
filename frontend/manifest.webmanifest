@@ -1,0 +1,15 @@
+{
+  "name": "Vivah Saathi – Shaadi ka har saman, ek jagah",
+  "short_name": "Vivah Saathi",
+  "description": "Puja samagri, Pandit Ji, mithai, mehndi, photographer, tent, band baja and halwai for weddings in Bihar and Uttar Pradesh.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f7f3ef",
+  "theme_color": "#7a1031",
+  "lang": "en-IN",
+  "icons": [
+    { "src": "/img/logo-mark.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

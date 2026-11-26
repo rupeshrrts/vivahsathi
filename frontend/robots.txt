@@ -1,0 +1,6 @@
+# The shop is for everyone; the admin panel, vendor panel and data API are not for search engines
+User-agent: *
+Disallow: /admin
+Disallow: /vendor
+Disallow: /api/
+Allow: /

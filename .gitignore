@@ -1,0 +1,24 @@
+# runtime data: orders, customers, password hashes, payment / SMS keys, vendor ID papers — never commit
+database/data/
+database/export.sql
+# zips made to move the site to another laptop / server (the data one holds customers' details)
+transfer/
+*.zip
+frontend/uploads/*
+!frontend/uploads/.gitkeep
+
+# secrets and local settings
+.env
+.env.*
+!.env.example
+
+# dependencies, logs, OS / editor files
+node_modules/
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+.claude/

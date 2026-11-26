@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vivah Saathi – Wedding Samagri & Bookings | Bihar & UP</title>
+  <meta name="description" content="Puja samagri, Pandit Ji, mithai, mehndi, haldi, photographer, flowers, doli car, tent, band baja and halwai for weddings in every district of Bihar and Uttar Pradesh.">
+  <meta name="theme-color" content="#7a1031">
+  <!-- the card WhatsApp / Facebook show when someone shares the site link -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Vivah Saathi">
+  <meta property="og:title" content="Vivah Saathi – Shaadi ka har saman, ek jagah | Bihar & UP">
+  <meta property="og:description" content="Puja samagri, Pandit Ji, mithai, mehndi, photographer, tent, band baja aur halwai — Bihar ke 38 aur UP ke 75 zilon mein. Cash on delivery, no login needed.">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1587271636175-90d58cdad458?w=1200&h=630&fit=crop&q=70">
+  <meta property="og:locale" content="en_IN">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="/img/logo.svg">
+  <link rel="apple-touch-icon" href="/img/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://images.unsplash.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css?v=booking-flow">
+</head>
+<body class="storefront">
+  <div class="announce" id="announce"></div>
+  <header class="header">
+    <div class="container header-row">
+      <a href="#/" class="logo">
+        <div class="logo-mark"><img src="/img/logo-mark.svg" alt=""></div>
+        <div class="logo-text"><b id="siteName">Vivah Saathi</b><small id="tagline">Shaadi ka har saman, ek jagah</small></div>
+      </a>
+      <form class="search" id="searchForm">
+        <input id="searchInput" type="search" placeholder="Search mehndi, pandit ji, photographer, khaja, tent..." autocomplete="off">
+        <button type="submit" aria-label="Search">🔍</button>
+      </form>
+      <button class="hdr-btn" id="districtBtn" type="button">📍 <span class="lbl"><span class="sub">Deliver to</span><span id="districtLbl">Select District</span></span></button>
+      <a class="hdr-btn hdr-opt" href="#/events">📅 <span class="lbl"><span class="sub">My</span><span class="hide-sm">Events</span></span></a>
+      <a class="hdr-btn hdr-opt" href="#/track">📦 <span class="lbl"><span class="sub">Track</span><span class="hide-sm">Order</span></span></a>
+      <div class="acct" id="acct"></div>
+      <a class="hdr-btn" href="#/cart">🛒<span class="badge hide" id="cartCount">0</span> <span class="hide-sm">Cart</span></a>
+      <button class="lang-btn" id="langBtn" type="button" data-act="lang" aria-label="Language / भाषा"><b data-l="en">EN</b><b data-l="hi">हिं</b></button>
+    </div>
+  </header>
+  <nav class="catbar"><div class="container catbar-row" id="catbar"></div></nav>
+
+  <main><div class="container page-wrap"><aside class="sidecat" id="sidecat" aria-label="Categories"></aside><div id="app"><div class="spinner"></div></div></div></main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="foot-grid">
+        <div>
+          <h4 id="footName">Vivah Saathi</h4>
+          <p>Bihar aur Uttar Pradesh ki shaadiyon ke liye ek hi jagah — puja samagri, Pandit Ji, mehndi, haldi, photographer, phool, mithai, gaadi, tent, band baja aur halwai. Har zile mein local team.</p>
+        </div>
+        <div><h4>Shop</h4><div id="footCats"></div></div>
+        <div>
+          <h4>Help</h4>
+          <a href="#/track">Track my order</a>
+          <a href="#/events">My shaadi events</a>
+          <a href="#/cart">Cart</a>
+          <a href="#/help">How booking works</a>
+          <a href="#/policy">Cancellation, Return & Refund</a>
+          <a href="#/shipping">Shipping & Delivery</a>
+          <a href="#/terms">Terms & Conditions</a>
+          <a href="#/privacy">Privacy Policy</a>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <a id="footPhone" href="#">📞</a>
+          <a id="footWa" href="#" target="_blank" rel="noopener">💬 WhatsApp</a>
+          <a id="footMail" href="#">✉️</a>
+          <a href="#/contact">Contact Us</a>
+          <p class="small">Seva: Bihar ke 38 zile<br>Uttar Pradesh ke 75 zile</p>
+        </div>
+      </div>
+      <div class="foot-bottom"><span>© <span id="year"></span> Vivah Saathi. All rights reserved.</span><span>Sample photos: Unsplash</span></div>
+    </div>
+  </footer>
+  <div id="cartbar"></div>
+  <nav class="bnav" id="bnav" aria-label="Main">
+    <a href="#/" data-nav=""><span class="bi">🏠</span>Home</a>
+    <a href="#/search" data-nav="search"><span class="bi">🗂️</span>Shop</a>
+    <a href="#/events" data-nav="events"><span class="bi">📅</span>Events</a>
+    <a href="#/track" data-nav="track"><span class="bi">📦</span>Orders</a>
+    <a href="#/cart" data-nav="cart"><span class="bi">🛒</span>Cart<span class="bb hide" id="bnavCount">0</span></a>
+  </nav>
+  <a class="wa-float" id="waFloat" href="#" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg></a>
+  <div class="toast-wrap" id="toasts"></div>
+  <script src="/js/i18n.js?v=package-cards"></script>
+  <script src="/js/geo.js"></script>
+  <script src="/js/doc-upload.js"></script>
+  <script src="/js/app.js?v=booking-flow"></script>
+  <script src="/js/vendors.js?v=booking-flow"></script>
+</body>
+</html>

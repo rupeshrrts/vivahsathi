@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Vivah Saathi">
+  <!-- the same dulha–dulhan heart without the tile, in maroon — for the gold logo tile in the site header and panels -->
+  <path d="M48.8 94C19 74 15 58 21 48C27 38 41 38 48.8 48Z" fill="#6b0f2c"/>
+  <path d="M51.2 94C81 74 85 58 79 48C73 38 59 38 51.2 48Z" fill="#6b0f2c"/>
+  <path d="M29 47.5Q50 67 71 47.5" fill="none" stroke="#ffe7a3" stroke-width="4.4" stroke-linecap="round" stroke-dasharray="0.01 4.3"/>
+  <circle cx="50" cy="57.3" r="3.6" fill="#ffe7a3"/>
+  <circle cx="50" cy="57.3" r="1.4" fill="#6b0f2c"/>
+  <g transform="translate(34 30.5) scale(1.15)">
+    <circle r="7" fill="#ffe7a3"/>
+    <path d="M-8.5-1C-8.5-9-4-12.5 0-12.5C5-12.5 8.5-9 8.5-1C5-4-5-4-8.5-1Z" fill="#6b0f2c"/>
+    <path d="M-7.6-4.6C-3.5-7.6 3.5-7.6 7.6-4.6" fill="none" stroke="#ffe7a3" stroke-width="1" stroke-linecap="round"/>
+    <path d="M3-12C4-17 7-19 9-20C8-17 7-14 5-11.5Z" fill="#6b0f2c"/>
+    <circle cx="1" cy="-8.4" r="1.4" fill="#ffe7a3"/>
+  </g>
+  <g transform="translate(66 31.5) scale(1.15)">
+    <path d="M-9.5 6C-10.5-2-6.5-10.5 0-11C6.5-10.5 10.5-2 9.5 6Z" fill="#6b0f2c"/>
+    <circle r="6.5" fill="#ffe7a3"/>
+    <circle cy="-6.8" r="1.5" fill="#6b0f2c"/>
+  </g>
+</svg>

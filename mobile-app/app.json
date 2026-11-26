@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "name": "Vivah Saathi",
+    "slug": "vivah-saathi-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "android": {
+      "package": "in.vivahsaathi.mobile"
+    },
+    "ios": {
+      "bundleIdentifier": "in.vivahsaathi.mobile"
+    }
+  }
+}

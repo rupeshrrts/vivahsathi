@@ -1,0 +1,19 @@
+{
+  "name": "vivah-saathi",
+  "version": "1.0.0",
+  "description": "Vivah Saathi - wedding samagri, pandit ji, mithai, car, tent and more for Bihar & Uttar Pradesh",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node --watch backend/server.js",
+    "reset": "node backend/server.js --reset",
+    "reset-admin": "node scripts/reset-admin.js",
+    "export-sql": "node database/export.js",
+    "check": "node scripts/check.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "UNLICENSED",
+  "private": true
+}
