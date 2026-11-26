@@ -1,0 +1,53 @@
+<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="vsGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#FFF7D6" />
+      <stop offset="25%" stopColor="#F5C518" />
+      <stop offset="65%" stopColor="#D4AF37" />
+      <stop offset="100%" stopColor="#9E7412" />
+    </linearGradient>
+
+    <linearGradient id="vsFlameGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stopColor="#C72545" />
+      <stop offset="50%" stopColor="#FF9933" />
+      <stop offset="100%" stopColor="#FFF3B0" />
+    </linearGradient>
+    
+    <radialGradient id="vsBg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stopColor="#560619" />
+      <stop offset="70%" stopColor="#3A0310" />
+      <stop offset="100%" stopColor="#1F0208" />
+    </radialGradient>
+  </defs>
+
+  {/* Outer Circle Background */}
+  <circle cx="50" cy="50" r="48" fill="url(#vsBg)" stroke="url(#vsGoldGrad)" strokeWidth="3" />
+  <circle cx="50" cy="50" r="44" stroke="url(#vsGoldGrad)" strokeWidth="1" strokeDasharray="2 3" opacity="0.6" />
+
+  {/* Royal Mukut / Crown Arch Top */}
+  <path d="M 36 28 Q 50 20 64 28 Q 58 22 50 22 Q 42 22 36 28 Z" fill="url(#vsGoldGrad)" />
+  <circle cx="50" cy="18" r="3" fill="url(#vsFlameGrad)" />
+  <circle cx="41" cy="22" r="2" fill="url(#vsGoldGrad)" />
+  <circle cx="59" cy="22" r="2" fill="url(#vsGoldGrad)" />
+
+  {/* Central Sacred Kalash / Pot Motif */}
+  <path d="M 40 76 L 60 76 L 57 80 L 43 80 Z" fill="url(#vsGoldGrad)" />
+  <path d="M 35 74 C 30 65, 34 54, 50 54 C 66 54, 70 65, 65 74 Z" fill="url(#vsGoldGrad)" stroke="#560619" strokeWidth="1" />
+  <path d="M 38 54 L 62 54 L 60 51 L 40 51 Z" fill="#FFF7D6" />
+
+  {/* Sacred Flame / Agni / Diya */}
+  <path d="M 50 51 C 44 44, 46 34, 50 28 C 54 34, 56 44, 50 51 Z" fill="url(#vsFlameGrad)" />
+  <path d="M 50 49 C 47 44, 48 37, 50 33 C 52 37, 53 44, 50 49 Z" fill="#FFFDF0" />
+
+  {/* Mango Leaves */}
+  <path d="M 38 51 C 28 45, 26 36, 32 32 C 37 36, 40 44, 42 49 Z" fill="url(#vsGoldGrad)" />
+  <path d="M 62 51 C 72 45, 74 36, 68 32 C 63 36, 60 44, 58 49 Z" fill="url(#vsGoldGrad)" />
+
+  {/* Interlocking Wedding Gathbandhan Knot */}
+  <path d="M 43 64 C 38 59, 36 67, 43 71 C 50 75, 50 75, 50 75 C 50 75, 50 75, 57 71 C 64 67, 62 59, 57 64 C 53 68, 50 71, 50 71 C 50 71, 47 68, 43 64 Z" fill="url(#vsFlameGrad)" opacity="0.9" />
+  <path d="M 50 67 C 47 64, 44 67, 47 70 C 50 72, 50 72, 50 72 C 50 72, 50 72, 53 70 C 56 67, 53 64, 50 67 Z" fill="url(#vsGoldGrad)" />
+
+  {/* Sparkling Stars */}
+  <path d="M 23 45 Q 23 41 19 41 Q 23 41 23 37 Q 23 41 27 41 Q 23 41 23 45 Z" fill="url(#vsGoldGrad)" />
+  <path d="M 77 45 Q 77 41 73 41 Q 77 41 77 37 Q 77 41 81 41 Q 77 41 77 45 Z" fill="url(#vsGoldGrad)" />
+</svg>

@@ -1,4 +1,4 @@
-# Vivah Saathi 🪔
+# Vivah Saathi 
 
 A wedding marketplace for **Bihar (38 districts)** and **Uttar Pradesh (75 districts)**. Customers can order puja samagri / rasam kits, mithai, cards, gifts and clothes, and book Pandit Ji, doli cars, ghodi / baggi, tent and shamiyana, band and DJ, halwai, decoration and photographers.
 

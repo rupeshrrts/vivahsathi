@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Rozha+One&family=Outfit:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+@layer base {
+  body {
+    background-color: #FAF7F2;
+    color: #1e293b;
+    font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, .font-royal {
+    font-family: 'Cinzel', serif;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #FAF7F2;
+}
+::-webkit-scrollbar-thumb {
+  background: #A61937;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #560619;
+}
+
+/* Glassmorphism & Luxury Cards */
+.glass-panel {
+  background: rgba(255, 253, 249, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+}
+
+.glass-maroon {
+  background: rgba(31, 2, 8, 0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(229, 193, 88, 0.35);
+}
+
+.bg-royal-gradient {
+  background: radial-gradient(circle at 50% 0%, #3A0310 0%, #1F0208 60%, #140105 100%);
+}
+
+.bg-royal-card {
+  background: linear-gradient(145deg, rgba(58, 3, 16, 0.9) 0%, rgba(31, 2, 8, 0.95) 100%);
+  border: 1px solid rgba(229, 193, 88, 0.3);
+}
+
+.badge-shadi {
+  background: linear-gradient(135deg, #560619 0%, #800020 50%, #A61937 100%);
+  color: #FFFDF0;
+  border: 1px solid rgba(229, 193, 88, 0.4);
+  box-shadow: 0 4px 14px rgba(31, 2, 8, 0.4);
+}
+
+.text-gold-gradient {
+  background: linear-gradient(135deg, #FFFDF0 0%, #F3DB59 40%, #E5C158 70%, #D4AF37 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Shimmer effect for buttons */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.btn-gold-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-gold-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.45) 50%, rgba(255,255,255,0) 100%);
+  transform: translateX(-100%);
+  animation: shimmer 2.8s infinite;
+}

@@ -1,0 +1,315 @@
+{
+  "categories": [
+    {
+      "id": "tent-mandap",
+      "name": "Tent & Mandap Decoration",
+      "nameHindi": "टेंट और मंडप सजावट (शामियाना)",
+      "description": "Traditional shamiyana, waterproof tents, grand wedding entrance gates, royal seating mandap, and vibrant flower lighting decorations.",
+      "descriptionHindi": "वाटरप्रूफ टेंट, शाही मंडप, जयमाला स्टेज, और मनमोहक लाइटिंग की संपूर्ण व्यवस्था।",
+      "image": "/images/mandap.jpg",
+      "startingPrice": 25000,
+      "displayOrder": 1,
+      "features": ["Waterproof Tents & Shamiyana", "Stage & Royal Jhula", "Traditional Marigold & Lighting", "Seating Chairs & Carpet"]
+    },
+    {
+      "id": "catering-halwai",
+      "name": "Cook / Halwai & Feast Catering",
+      "nameHindi": "हलवाई एवं प्रीतिभोज (भंडारा) कैटरिंग",
+      "description": "Expert master halwais, authentic Bihari & UP wedding feast dishes, sweet makers (Gulab Jamun, Jalebi, Rasgulla), and full utensil arrangements.",
+      "descriptionHindi": "अनुभवी हलवाई टीम, स्वादिष्ट पारंपरिक व्यंजन, शुद्धता एवं स्वच्छता की पूरी गारंटी।",
+      "image": "/images/catering.jpg",
+      "startingPrice": 35000,
+      "displayOrder": 2,
+      "features": ["Master Halwai & Assistant Team", "Fresh Sweets & Snacks", "Utensils & Buffet Counters", "Hygienic Food Service"]
+    },
+    {
+      "id": "baraat-vehicles",
+      "name": "Rented Cars & Baraat Vehicles",
+      "nameHindi": "दूल्हा गाड़ी, टेम्पो और बारात बसें",
+      "description": "Fresh flower-decorated groom cars (Scorpio, Safari, Fortuner, Vintage), luxury tempo travellers, and buses for baraatis.",
+      "descriptionHindi": "सजी हुई दूल्हा कार, बरातियों के लिए आरामदायक बस और टेम्पो ट्रैवलर।",
+      "image": "https://images.unsplash.com/photo-1549417229-7686ac5595fd?auto=format&fit=crop&w=800&q=80",
+      "startingPrice": 8500,
+      "displayOrder": 3,
+      "features": ["Fresh Flower Decorated Groom Car", "Punctual Driver & Fuel Included", "Baraat Buses (32/52 Seater)", "24x7 Roadside Assistance"]
+    },
+    {
+      "id": "photo-video",
+      "name": "Photography & Videography",
+      "nameHindi": "फोटोग्राफी और वीडियोग्राफी (ड्रोन)",
+      "description": "Cinematic HD video recording, 4K drone camera coverage, traditional bride-groom photography, and printed premium velvet photo album.",
+      "descriptionHindi": "4K ड्रोन कवरेज, सिनेमैटिक वीडियो, एवं प्रीमियम फोटो एलबम रिकॉर्डिंग।",
+      "image": "https://images.unsplash.com/photo-1537633552985-df8429e8048b?auto=format&fit=crop&w=800&q=80",
+      "startingPrice": 18000,
+      "displayOrder": 4,
+      "features": ["4K Drone Aerial Coverage", "HD Video Recording & Teaser", "High-Res Digital Photos", "Hardbound Velvet Photo Album"]
+    },
+    {
+      "id": "orchestra-dj",
+      "name": "Orchestra, Band-Baja & Sound",
+      "nameHindi": "बैंड-बाजा, डीजे और आर्केस्ट्रा साउंड",
+      "description": "Royal traditional brass band with uniformed musicians, high-bass DJ sound truck, colorful laser lighting, and live local orchestra singers.",
+      "descriptionHindi": "शाही ब्रास बैंड, धमाकेदार डीजे साउंड ट्रकों और लाइट शो की व्यवस्था।",
+      "image": "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=800&q=80",
+      "startingPrice": 15000,
+      "displayOrder": 5,
+      "features": ["Uniformed Brass Band Musicians", "Heavy Bass DJ Sound Rig", "Laser & Moving Head Lights", "Generators Included"]
+    },
+    {
+      "id": "pandit-rituals",
+      "name": "Pandit Ji & Ritual Booking",
+      "nameHindi": "पंडित जी एवं विवाह पूजा मुहूर्त",
+      "description": "Experienced Vedic Pandits for Shubh Muhurat, Tilak, Kanyadaan, Phere, and complete wedding ceremony samagri list coordination.",
+      "descriptionHindi": "विद्वान पंडित जी द्वारा वैदिक विधि-विधान, शुभ मुहूर्त और संपूर्ण विवाह पूजा।",
+      "image": "https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=800&q=80",
+      "startingPrice": 5100,
+      "displayOrder": 6,
+      "features": ["Vedic Ritual Scholar", "Pooja Samagri List Guidance", "Complete Phere & Mandap Rituals", "Muhurat Consultation"]
+    },
+    {
+      "id": "grocery-supply",
+      "name": "Bulk Grocery & Kitchen Supplies",
+      "nameHindi": "थोक राशन एवं रसोई सामग्री आपूर्ति",
+      "description": "Direct wholesale delivery of high quality Basmati rice, pure desi ghee, mustard oil, spices, pulses, and kitchen groceries to your door.",
+      "descriptionHindi": "शुद्ध देशी घी, मसाले, बासमती चावल एवं रसोई सामग्री सीधे मंडी भाव पर।",
+      "image": "https://images.unsplash.com/photo-1578916171728-46686eac8d58?auto=format&fit=crop&w=800&q=80",
+      "startingPrice": 20000,
+      "displayOrder": 7,
+      "features": ["Wholesale Mandi Rates", "Pure Desi Ghee & Oils", "Premium Basmati Rice & Pulses", "Doorstep Village Delivery"]
+    },
+    {
+      "id": "other-services",
+      "name": "Lighting, Generator & Rental",
+      "nameHindi": "लाइटिंग, जनरेटर, बर्तन व टेलरिंग",
+      "description": "Heavy-duty 62.5kVA silent generator back-up, street lighting tube gates, utensils rental, emergency power, and bridal tailoring.",
+      "descriptionHindi": "साइलेंट जनरेटर बैकअप, रोड लाइट गेट, बर्तन सेट और आपातकालीन सेवा।",
+      "image": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80",
+      "startingPrice": 7500,
+      "displayOrder": 8,
+      "features": ["62.5 kVA Silent Generator", "Roadside Lighting Gates", "Community Utensils Rental", "Dedicated On-site Technician"]
+    }
+  ],
+  "packages": [
+    {
+      "id": "basic-baraat",
+      "name": "Basic Baraat & Rituals Package",
+      "nameHindi": "बेसिक बारात एवं विवाह पैकेज",
+      "includedCategoryIds": ["baraat-vehicles", "orchestra-dj", "pandit-rituals"],
+      "includedCategoryNames": ["Groom Decorated SUV", "Traditional Brass Band (11 Musicians)", "Vedic Pandit Ji Rituals"],
+      "price": 38000,
+      "discountPrice": 32000,
+      "description": "Perfect essential bundle for a seamless baraat arrival and traditional sacred wedding rituals.",
+      "descriptionHindi": "बारात की शानदार एंट्री और पवित्र विवाह रस्मों के लिए सबसे उपयुक्त किफायती पैकेज।",
+      "image": "/images/mandap.jpg",
+      "popular": false
+    },
+    {
+      "id": "full-dehat-vivah",
+      "name": "Full Dehat Vivah Complete Package",
+      "nameHindi": "संपूर्ण देहात विवाह महा-पैकेज",
+      "includedCategoryIds": ["tent-mandap", "catering-halwai", "photo-video", "orchestra-dj", "pandit-rituals"],
+      "includedCategoryNames": ["Royal Mandap & Shamiyana (300 Guests)", "Master Halwai & Feast Catering (300 Guests)", "4K Drone & Video Photography", "Baraat Band + High-Bass DJ", "Pandit Ji Vedic Puja"],
+      "price": 165000,
+      "discountPrice": 139000,
+      "description": "Our most popular all-inclusive package! Everything managed by VivahSathi with 100% money-back quality guarantee.",
+      "descriptionHindi": "सबसे लोकप्रिय सम्पूर्ण पैकेज! टेंट, हलवाई, वीडियो, डीजे और पंडित जी - सब एक साथ।",
+      "image": "/images/catering.jpg",
+      "popular": true
+    },
+    {
+      "id": "shahi-mahotsav",
+      "name": "Shahi Mahotsav Grand Wedding Package",
+      "nameHindi": "शाही महोत्सव भव्य विवाह पैकेज",
+      "includedCategoryIds": ["tent-mandap", "catering-halwai", "photo-video", "orchestra-dj", "pandit-rituals", "baraat-vehicles", "grocery-supply", "other-services"],
+      "includedCategoryNames": ["Royal Glass Mandap (600 Guests)", "Grand Feast Catering (500 Guests)", "Cinematic 4K Drone Team", "Brass Band + DJ Sound Truck", "Decorated SUV + 2 Baraat Buses", "Bulk Grocery Supply", "Silent Generator Backup"],
+      "price": 310000,
+      "discountPrice": 265000,
+      "description": "Ultimate royal celebration package. Unmatched luxury setup, master chefs, end-to-end company supervision.",
+      "descriptionHindi": "शाही एवं भव्य शादी समारोह का सर्वोत्तम पैकेज। 100% जिम्मेदारी हमारी कंपनी की।",
+      "image": "/images/mandap.jpg",
+      "popular": false
+    }
+  ],
+  "vendors": [
+    {
+      "id": "VEND-001",
+      "name": "Maa Ambe Tent & Shamiyana House",
+      "category": "tent-mandap",
+      "district": "Patna",
+      "villageTehsil": "Bihta / Maner",
+      "phone": "+91 9835012345",
+      "reliabilityScore": 4.9,
+      "reliabilityNotes": "Verified local vendor. Owns 500+ seating capacity, waterproof German hanger tents. 0 no-shows in 3 years.",
+      "active": true,
+      "experienceYears": 12,
+      "completedWeddings": 240
+    },
+    {
+      "id": "VEND-002",
+      "name": "Shree Ram Royal Brass Band & DJ",
+      "category": "orchestra-dj",
+      "district": "Patna",
+      "villageTehsil": "Danapur",
+      "phone": "+91 9835023456",
+      "reliabilityScore": 4.8,
+      "reliabilityNotes": "Uniformed brass band team of 14 musicians. Punctual at baraat destination.",
+      "active": true,
+      "experienceYears": 8,
+      "completedWeddings": 180
+    },
+    {
+      "id": "VEND-003",
+      "name": "Bihari Ji Halwai & Master Catering",
+      "category": "catering-halwai",
+      "district": "Patna",
+      "villageTehsil": "Phulwari Sharif",
+      "phone": "+91 9835034567",
+      "reliabilityScore": 5.0,
+      "reliabilityNotes": "Renowned Master Halwai. Specializes in Bihari Khaja, Gulab Jamun, Paneer Tikka. High hygiene rating.",
+      "active": true,
+      "experienceYears": 20,
+      "completedWeddings": 450
+    },
+    {
+      "id": "VEND-004",
+      "name": "Pandit Raghunath Shastri Vedic Rituals",
+      "category": "pandit-rituals",
+      "district": "Patna",
+      "villageTehsil": "Patna City",
+      "phone": "+91 9835045678",
+      "reliabilityScore": 4.9,
+      "reliabilityNotes": "Scholarly Pandit ji with 15+ years experience conducting traditional marriage rituals.",
+      "active": true,
+      "experienceYears": 15,
+      "completedWeddings": 310
+    },
+    {
+      "id": "VEND-005",
+      "name": "Varanasi Royal Studio & 4K Videography",
+      "category": "photo-video",
+      "district": "Varanasi",
+      "villageTehsil": "Pindra / Shivpur",
+      "phone": "+91 9835056789",
+      "reliabilityScore": 4.8,
+      "reliabilityNotes": "High end camera gear, DJI Mavic drone operator included. Delivers video teaser within 48 hours.",
+      "active": true,
+      "experienceYears": 7,
+      "completedWeddings": 140
+    },
+    {
+      "id": "VEND-006",
+      "name": "Gorakhpur Baraat Motors & Luxury Cars",
+      "category": "baraat-vehicles",
+      "district": "Gorakhpur",
+      "villageTehsil": "Sahjanwa",
+      "phone": "+91 9835067890",
+      "reliabilityScore": 4.7,
+      "reliabilityNotes": "Clean flower decorated Safari & Scorpio vehicles. Backup driver always on call.",
+      "active": true,
+      "experienceYears": 9,
+      "completedWeddings": 210
+    },
+    {
+      "id": "VEND-007",
+      "name": "Deoria Kirana Wholesale & Grocery",
+      "category": "grocery-supply",
+      "district": "Deoria",
+      "villageTehsil": "Bhatpar Rani",
+      "phone": "+91 9835078901",
+      "reliabilityScore": 4.9,
+      "reliabilityNotes": "Direct mandi wholesale rates. Supplies packaged pure ghee and Basmati rice in bulk.",
+      "active": true,
+      "experienceYears": 14,
+      "completedWeddings": 290
+    },
+    {
+      "id": "VEND-008",
+      "name": "Chhapra Lights & 62kVA Silent Generator",
+      "category": "other-services",
+      "district": "Saran",
+      "villageTehsil": "Marhaura",
+      "phone": "+91 9835089012",
+      "reliabilityScore": 4.8,
+      "reliabilityNotes": "Dual generator setup ensuring 0 power outages during mandap rituals.",
+      "active": true,
+      "experienceYears": 10,
+      "completedWeddings": 195
+    }
+  ],
+  "bookings": [
+    {
+      "id": "VS-2026-8841",
+      "customerName": "Ramesh Chandra Sharma",
+      "phone": "9876543210",
+      "whatsapp": "9876543210",
+      "district": "Patna",
+      "tehsilVillage": "Bihta, Village Dayalpur",
+      "weddingDate": "2026-11-24",
+      "selectedCategoryIds": ["tent-mandap", "catering-halwai", "photo-video"],
+      "selectedPackageId": "full-dehat-vivah",
+      "guestCount": 350,
+      "budget": "150000",
+      "status": "Vendor Assigned",
+      "assignedVendors": [
+        {
+          "category": "tent-mandap",
+          "categoryName": "Tent & Mandap Decoration",
+          "vendorId": "VEND-001",
+          "vendorName": "Maa Ambe Tent & Shamiyana House",
+          "phone": "+91 9835012345"
+        },
+        {
+          "category": "catering-halwai",
+          "categoryName": "Cook / Halwai & Feast Catering",
+          "vendorId": "VEND-003",
+          "vendorName": "Bihari Ji Halwai & Master Catering",
+          "phone": "+91 9835034567"
+        }
+      ],
+      "backupVendors": [
+        {
+          "category": "tent-mandap",
+          "vendorId": "VEND-008",
+          "vendorName": "Chhapra Lights & Generator",
+          "phone": "+91 9835089012"
+        }
+      ],
+      "totalPrice": 139000,
+      "notes": "Prefers maroon and gold mandap drapes. Special request for Bihari Khaja in sweet menu.",
+      "createdAt": "2026-09-18T14:20:00.000Z"
+    },
+    {
+      "id": "VS-2026-8842",
+      "customerName": "Anand Kumar Singh",
+      "phone": "9988776655",
+      "whatsapp": "9988776655",
+      "district": "Varanasi",
+      "tehsilVillage": "Pindra, Village Rajatalab",
+      "weddingDate": "2026-12-05",
+      "selectedCategoryIds": ["photo-video", "orchestra-dj"],
+      "selectedPackageId": null,
+      "guestCount": 200,
+      "budget": "45000",
+      "status": "Confirmed",
+      "assignedVendors": [
+        {
+          "category": "photo-video",
+          "categoryName": "Photography & Videography",
+          "vendorId": "VEND-005",
+          "vendorName": "Varanasi Royal Studio & 4K Videography",
+          "phone": "+91 9835056789"
+        }
+      ],
+      "backupVendors": [],
+      "totalPrice": 33000,
+      "notes": "Wants drone video during jaimala ceremony.",
+      "createdAt": "2026-09-19T09:15:00.000Z"
+    }
+  ],
+  "adminUser": {
+    "username": "admin",
+    "passwordHash": "admin123",
+    "role": "SuperAdmin",
+    "name": "VivahSathi Ops Director"
+  }
+}
