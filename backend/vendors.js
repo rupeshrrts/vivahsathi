@@ -175,7 +175,11 @@ module.exports = function setupVendors(h) {
   const vreviews = () => D().vreviews || (D().vreviews = []);
   const vvisits = () => D().vvisits || (D().vvisits = []);
   const districtOf = id => D().districts.find(d => d.id === id) || null;
-  const isDate = d => /^\d{4}-\d{2}-\d{2}$/.test(d || '');
+  const isDate = d => {
+    if (typeof d !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(d)) return false;
+    const timestamp = Date.parse(d);
+    return Number.isFinite(timestamp) && new Date(timestamp).toISOString().slice(0, 10) === d;
+  };
 
   // ---------- location ----------
   // Where the vendor is: their own pin, else their district HQ (approx)
@@ -451,7 +455,7 @@ module.exports = function setupVendors(h) {
     return { ...rest, capacityPerDay: perDay(v), onePerDay: isPerson(v), papersOk: papersOk(v), trust: trustOf(v), districtName: (districtOf(v.district) || {}).name || '', state: (districtOf(v.district) || {}).state || '' };
   };
   // families see verified, active vendors — sample ones only while the admin shows them (Settings → Go-live)
-  const visible = v => v.verified && v.active && (!v.sample || D().settings.showSamples !== false);
+  const visible = v => v.verified && v.active && (!v.sample || (!h.publicProduction && D().settings.showSamples !== false));
 
   // ---------- public routes ----------
   route('GET', '/api/vtypes', (req, res) => {
@@ -862,6 +866,10 @@ module.exports = function setupVendors(h) {
 
   // Booking: re-checks every rule on the server so two customers can never take the same slot
   function checkBooking(v, date, rawItems, exceptId, rawEvent) {
+    if (!Array.isArray(rawItems) || !rawItems.length || rawItems.length > 50 ||
+        rawItems.some(item => !item || typeof item !== 'object' || Array.isArray(item))) {
+      return { error: 'Select between 1 and 50 valid items or services per booking' };
+    }
     const mode = TYPE[v.type].mode;
     const a = availability(v, date);
     if (a.status === 'past') return { error: 'Please choose a date from today onwards' };
@@ -873,7 +881,7 @@ module.exports = function setupVendors(h) {
     const items = [], taken = {};
     // event-mode bookings are for one function (Tilak, Haldi, Shaadi...); older carts send none, so it is taken from the items
     let event = mode === 'event' && EVENTS.includes(rawEvent) ? rawEvent : '';
-    for (const it of (Array.isArray(rawItems) ? rawItems : []).slice(0, 50)) {
+    for (const it of rawItems) {
       const l = listings().find(x => x.id === it.listingId && x.vendorId === v.id && x.active);
       const qty = Math.max(1, Math.min(100000, Math.round(num(it.qty, 1))));
       if (!l) return { error: 'Some selected item is no longer available' };
@@ -993,20 +1001,22 @@ module.exports = function setupVendors(h) {
   function createVBooking({ vendorId, date, items, delivery, event, eventTime }, customer, note, me) {
     const v = vendors().find(x => x.id === str(vendorId, 40) && visible(x));
     if (!v) return { error: 'Vendor not found', status: 404 };
-    if (!isDate(str(date, 10))) return { error: `Select the booking date for ${v.name}` };
+    if (!isDate(date)) return { error: `Select the booking date for ${v.name}` };
     const chk = checkBooking(v, date, items, undefined, event);
     if (chk.error) return { error: chk.error, status: chk.status || 400, vendorId: v.id, date };
     const mode = TYPE[v.type].mode;
     const { subtotal, rental, canDeliver, deliveryCharge } = deliveryFor(v, chk.items, delivery);
     if (mode === 'stock') for (const i of chk.items) listings().find(l => l.id === i.listingId).stock -= i.qty;
     const seq = (D().counters.vbooking = (D().counters.vbooking || 5000) + 1);
+    const createdAt = now();
     const b = {
       id: uid('vb_'), number: 'VB' + seq, vendorId: v.id, vendorName: v.name, type: v.type, date, ...(chk.event ? { event: chk.event } : {}), ...(isTime(eventTime) ? { eventTime } : {}), items: chk.items, subtotal, deliveryCharge, total: subtotal + deliveryCharge,
       fulfilment: mode === 'stock' ? (canDeliver ? 'delivery' : 'pickup') : rental && canDeliver ? 'delivery' : 'on-site',
       customer, note: str(note, 500), userId: me ? me.id : null,
-      status: 'requested', history: [{ status: 'requested', at: now(), note: 'Booking requested' }], createdAt: now(), reviewed: false,
-      answerBy: answerBy(date, now()), ...(v.advance > 0 ? { advance: v.advance } : {}), // the vendor answers by then, or the date is released
+      status: 'requested', history: [{ status: 'requested', at: createdAt, note: 'Booking requested' }], createdAt, reviewed: false,
+      ...(v.advance > 0 ? { advance: Math.min(v.advance, subtotal + deliveryCharge) } : {}),
     };
+    b.answerBy = bookingDeadline(b);
     vbookings().push(b);
     return { booking: b, vendor: { id: v.id, name: v.name, phone: v.phone, whatsapp: v.whatsapp } };
   }
@@ -1023,6 +1033,7 @@ module.exports = function setupVendors(h) {
     if (D().settings.otpRequired && !me) return fail(res, 401, 'Please verify your mobile number with OTP to book');
     const c = cleanCustomer(body.customer);
     if (c.error) return fail(res, 400, c.error);
+    expireRequests();
     const r = createVBooking(body, c.customer, body.note, me);
     if (r.error) return fail(res, r.status || 400, r.error);
     bump('vbookings'); // funnel: one booking request (saves)
@@ -1033,10 +1044,14 @@ module.exports = function setupVendors(h) {
   route('POST', '/api/vbookings/bulk', (req, res, { body }) => {
     const me = currentUser(req);
     if (D().settings.otpRequired && !me) return fail(res, 401, 'Please verify your mobile number with OTP to book');
-    const groups = Array.isArray(body.groups) ? body.groups.slice(0, 30) : [];
+    const groups = Array.isArray(body.groups) ? body.groups : [];
     if (!groups.length) return fail(res, 400, 'Your vendor cart is empty');
+    if (groups.length > 30 || groups.some(group => !group || typeof group !== 'object' || Array.isArray(group))) {
+      return fail(res, 400, 'Send up to 30 valid vendor requests at a time');
+    }
     const c = cleanCustomer(body.customer);
     if (c.error) return fail(res, 400, c.error);
+    expireRequests();
     const created = [];
     for (const g of groups) {
       const r = createVBooking(g, c.customer, body.note, me);
@@ -1051,6 +1066,7 @@ module.exports = function setupVendors(h) {
   route('GET', '/api/vbookings/track', (req, res, { query }) => {
     const b = findVB(query.get('number'), query.get('phone'));
     if (!b) return fail(res, 404, 'No booking found with this booking number and mobile number');
+    expireRequests([b]);
     const v = vendors().find(x => x.id === b.vendorId);
     send(res, 200, { booking: withMoney(b), vendor: v ? { id: v.id, name: v.name, phone: v.phone, whatsapp: v.whatsapp, address: v.address } : null });
   });
@@ -1058,8 +1074,10 @@ module.exports = function setupVendors(h) {
   // OTP-verified (a password sign-up alone does not prove the number is theirs); another account's bookings never
   const bookingsOf = u => vbookings().filter(b => b.userId === u.id || (!b.userId && u.phoneVerified && b.customer.phone === u.phone));
   route('GET', '/api/vbookings/mine', (req, res, { user }) => {
-    const contact = id => { const v = vendors().find(x => x.id === id); return v ? { id: v.id, name: v.name, phone: v.phone, whatsapp: v.whatsapp } : null; };
-    send(res, 200, { bookings: bookingsOf(user).sort((a, b) => b.createdAt.localeCompare(a.createdAt)).map(b => ({ ...withMoney(b), vendor: contact(b.vendorId) })), phoneVerified: !!user.phoneVerified });
+    const contact = id => { const v = vendors().find(x => x.id === id); return v ? { id: v.id, name: v.name, phone: v.phone, whatsapp: v.whatsapp, address: v.address } : null; };
+    const bookings = bookingsOf(user);
+    expireRequests(bookings);
+    send(res, 200, { bookings: bookings.sort((a, b) => b.createdAt.localeCompare(a.createdAt)).map(b => ({ ...withMoney(b), vendor: contact(b.vendorId) })), phoneVerified: !!user.phoneVerified });
   }, { auth: true });
 
   // confirmedAt / completedAt / cancelledAt / rejectedAt: first time a booking reached that status (time-to-confirm analytics)
@@ -1077,11 +1095,14 @@ module.exports = function setupVendors(h) {
   const HOLD_HOURS = 48;
   // (a same-day or next-morning request still gets at least 3 hours)
   function answerBy(date, created) { const c = Date.parse(created); return new Date(Math.max(c + 3 * 36e5, Math.min(c + HOLD_HOURS * 36e5, Date.parse(date + 'T00:00:00+05:30')))).toISOString(); }
-  function expireRequests() {
+  function bookingDeadline(b) {
+    return answerBy(vbDates(b).sort()[0], b.createdAt);
+  }
+  function expireRequests(bookings = vbookings()) {
     let n = 0;
-    for (const b of vbookings()) {
+    for (const b of bookings) {
       if (b.status !== 'requested') continue;
-      if (!b.answerBy) b.answerBy = answerBy(b.date, b.createdAt); // older requests
+      if (!b.answerBy) b.answerBy = bookingDeadline(b);
       if (Date.now() <= Date.parse(b.answerBy)) continue;
       setVBStatus(b, 'cancelled', `${b.vendorName} did not answer in time — the date is released. Please book another vendor for this date.`);
       b.expired = true; n++;
@@ -1098,6 +1119,7 @@ module.exports = function setupVendors(h) {
   route('POST', '/api/vbookings/cancel', (req, res, { body }) => {
     const b = findVB(body.number, body.phone);
     if (!b) return fail(res, 404, 'Booking not found');
+    expireRequests([b]);
     if (!ACTIVE_BOOKING.includes(b.status)) return fail(res, 400, 'This booking can no longer be cancelled');
     setVBStatus(b, 'cancelled', 'Cancelled by customer'); save();
     send(res, 200, { booking: withMoney(b) });
@@ -1444,14 +1466,23 @@ module.exports = function setupVendors(h) {
     route('PUT', base + '/bookings/:bid', (req, res, ctx) => {
       const v = resolve(ctx); const b = v && vbookings().find(x => x.id === ctx.params.bid && x.vendorId === v.id);
       if (!b) return fail(res, 404, 'Booking not found');
-      if (ctx.body.status === 'confirmed' && b.status === 'requested') {
+      expireRequests([b]);
+      const { status } = ctx.body;
+      const allowed = { requested: ['confirmed', 'rejected'], confirmed: ['completed', 'cancelled'] }[b.status] || [];
+      if (status !== b.status && !allowed.includes(status)) {
+        return fail(res, 409, 'This booking is already ' + b.status + '. Refresh to see the latest status.');
+      }
+      if (status === 'completed' && b.status !== status && vbDates(b).some(date => date > new Date(Date.now() + 330 * 60e3).toISOString().slice(0, 10))) {
+        return fail(res, 409, 'Mark this booking completed after the final service date');
+      }
+      if (status === 'confirmed' && b.status === 'requested') {
         // confirming must still respect the per-day limit (on every rasam date of a full-ceremony booking)
         const cap = perDay(v);
         // (rental pieces were already held from stock when requested, and do not use daily slots)
         const full = TYPE[v.type].mode === 'event' && !rentalOnly(b) && vbDates(b).find(dt => vbookings().filter(x => x.id !== b.id && x.vendorId === v.id && ['confirmed', 'completed'].includes(x.status) && !rentalOnly(x) && vbDates(x).includes(dt)).length >= cap);
         if (full) return fail(res, 409, full === b.date ? 'Already fully booked on this date' : `Already fully booked on ${full}`);
       }
-      setVBStatus(b, ctx.body.status, str(ctx.body.note, 200));
+      setVBStatus(b, status, str(ctx.body.note, 200));
       if ('vendorNote' in ctx.body) b.vendorNote = str(ctx.body.vendorNote, 500);
       save(); send(res, 200, { booking: b });
     }, opts);
@@ -1507,12 +1538,13 @@ module.exports = function setupVendors(h) {
     if (!v) return fail(res, 404, 'Vendor not found');
     const phone = str(body.phone || v.phone, 15);
     if (!/^[6-9]\d{9}$/.test(phone)) return fail(res, 400, 'Enter a valid 10-digit mobile number');
+    if (body.password && String(body.password).length < 6) return fail(res, 400, 'Password must be at least 6 characters');
     let u = D().users.find(x => x.phone === phone);
     if (u && u.role === 'admin') return fail(res, 400, 'This number belongs to an admin account');
     if (u && u.role === 'vendor' && u.vendorId !== v.id) return fail(res, 400, 'This number is already linked to another vendor');
     if (!u) { u = { id: uid('u_'), name: v.owner || v.name, phone, email: '', password: '', addresses: [], wishlist: [], blocked: false, createdAt: now() }; D().users.push(u); }
     u.role = 'vendor'; u.vendorId = v.id;
-    if (body.password) { if (String(body.password).length < 6) return fail(res, 400, 'Password must be at least 6 characters'); u.password = h.hashPassword(body.password); }
+    if (body.password) u.password = h.hashPassword(body.password);
     v.userId = u.id; save();
     send(res, 200, { ok: true, phone });
   }, { admin: true });

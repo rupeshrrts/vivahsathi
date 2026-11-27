@@ -15,6 +15,7 @@ const { districtGeo } = require('./geo');
 const { setupSupabase, restoreIfEmpty } = require('./supabase');
 
 const PORT = process.env.PORT || 3000;
+const publicProduction = process.env.NODE_ENV === 'production' && process.env.DEMO_DATA !== '1';
 const ROOT = path.join(__dirname, '..'); // project root (server code lives in backend/)
 const PUBLIC_DIR = path.join(ROOT, 'frontend'); // the website
 const UPLOAD_DIR = process.env.UPLOAD_DIR ? path.resolve(process.env.UPLOAD_DIR) : path.join(PUBLIC_DIR, 'uploads');
@@ -38,6 +39,15 @@ const restoredMsg = process.argv.includes('--reset') ? '' : restoreIfEmpty(DB_FI
 if (restoredMsg) console.log(restoredMsg);
 if (process.argv.includes('--reset') || !fs.existsSync(DB_FILE)) {
   db = buildSeed(hashPassword);
+  if (publicProduction) {
+    db.products = [];
+    db.packages = [];
+    db.orders = [];
+    db.users = db.users.filter(user => user.role === 'admin');
+    db.samplesRemoved = true;
+    Object.assign(db, { vendors: [], vlistings: [], vbookings: [], vendorSeedVersion: 14 });
+    Object.assign(db.settings, { phone: '', whatsapp: '', email: '', announcement: '', banners: [], otpLogin: false, showSamples: false });
+  }
   // a new site never starts with a known password: the admin gets ADMIN_PASSWORD (8+ characters) or a random one,
   // written to ADMIN-LOGIN.txt next to the data (private, never in git); the demo customer gets a random one too
   const envPw = process.env.ADMIN_PASSWORD || '', pw = envPw.length >= 8 ? envPw : crypto.randomBytes(9).toString('base64').replace(/[+/=]/g, 'x');
@@ -342,7 +352,7 @@ if (!db.flowerStyles) {
   const LOOSE = [['p_l01', 'Loose Genda Phool', 'खुला गेंदा फूल', 120, 'kg', '🌼', GENDA, 'Fresh marigold flowers, loose — for rangoli, thali, pooja and making your own mala.'],
     ['p_l02', 'Loose Gulab Phool (25 stems)', 'खुला गुलाब (25 डंडी)', 300, '25 stems', '🌹', JAIMALA, 'Fresh red roses with stems — for bouquets, stage and car.'],
     ['p_l03', 'Rajnigandha Bunch (10 sticks)', 'रजनीगंधा गुच्छा', 150, 'bunch', '🤍', JAIMALA, 'White, fragrant rajnigandha sticks — for vases, mandap and jaimala.']];
-  for (const [id, name, nameHi, price, unit, emoji, image, desc] of LOOSE) if (!db.products.some(p => p.id === id))
+  for (const [id, name, nameHi, price, unit, emoji, image, desc] of LOOSE) if (!publicProduction && !db.products.some(p => p.id === id))
     db.products.push({ id, cat: 'decoration', type: 'product', name, nameHi, price, mrp: price, unit, emoji, image, desc, includes: [], featured: false, minQty: 1, stock: 200, active: true, districts: 'all', createdAt: at, defaultEvent: '', dailyCapacity: 0, loose: true });
   db.flowerStyles = true;
   saveNow();
@@ -567,13 +577,13 @@ function migrate() {
   }
   for (const sp of seed.products) {
     const p = db.products.find(x => x.id === sp.id);
-    if (!p) { db.products.push(sp); continue; }
+    if (!p) { if (!publicProduction) db.products.push(sp); continue; }
     if (!p.image) p.image = sp.image;
     for (const k of ['defaultEvent', 'dailyCapacity']) if (!(k in p)) p[k] = sp[k];
   }
   db.settings.banners = (db.settings.banners || []).map((b, i) => ({ ...b, image: b.image || (seed.settings.banners[i] || {}).image || '' }));
   db.packages = db.packages || [];
-  for (const sk of seed.packages) if (!db.packages.some(k => k.id === sk.id)) db.packages.push(sk);
+  if (!publicProduction) for (const sk of seed.packages) if (!db.packages.some(k => k.id === sk.id)) db.packages.push(sk);
   db.analytics = db.analytics || { days: {}, products: {} };
   db.version = seed.version;
   saveNow();
@@ -704,7 +714,12 @@ function secrets() {
     pepper: s.otpPepper,
   };
 }
-const onlinePayEnabled = () => { const k = secrets(); return !!(db.settings.onlinePayments && k.keyId && k.keySecret); };
+const onlinePayEnabled = () => {
+  const k = secrets();
+  return !!(db.settings.onlinePayments && k.keyId && k.keySecret &&
+    (!publicProduction || (k.keyId.startsWith('rzp_live_') && k.webhookSecret)));
+};
+const otpProviderAllowed = sms => !publicProduction || sms.provider !== 'console';
 // the visitor's address for rate limits. X-Forwarded-For is only believed behind a proxy (TRUST_PROXY=1 on Render,
 // Railway, Nginx…), and then its last entry — the one the proxy added; without a proxy anyone can fake that header
 const clientIp = req => {
@@ -852,7 +867,7 @@ function publicSettings() {
     siteName, tagline, phone, whatsapp, email, deliveryCharge, freeDeliveryAbove, advancePercent, banners, announcement, policy: policy(),
     business: { legalName: '', address: '', hours: '', grievanceName: '', grievanceEmail: '', gstin: '', deliveryTime: '', city: '', updated: '', ...(db.settings.business || {}) },
     payments: { online: onlinePayEnabled(), testMode: k.keyId.startsWith('rzp_test_'), upi: db.settings.upiId ? { id: db.settings.upiId, name: db.settings.upiName || siteName } : null },
-    otp: { login: !!db.settings.otpLogin, required: !!db.settings.otpRequired, testMode: k.sms.provider === 'console' },
+    otp: { login: !!db.settings.otpLogin && otpProviderAllowed(k.sms), required: !!db.settings.otpRequired, testMode: !publicProduction && k.sms.provider === 'console' },
     // optional Google Maps browser key (restrict it to your domain in Google Cloud); without it the free OpenStreetMap map is used
     maps: { googleKey: process.env.GOOGLE_MAPS_KEY || db.settings.googleMapsKey || '' },
   };
@@ -990,6 +1005,7 @@ route('POST', '/api/auth/otp/send', async (req, res, { body }) => {
   if (u && u.role === 'admin') return fail(res, 403, 'Admin accounts must log in with password');
   if (u && u.blocked) return fail(res, 403, 'Your account is blocked. Please contact support.');
   const k = secrets();
+  if (!otpProviderAllowed(k.sms)) return fail(res, 503, 'SMS verification is unavailable. Please contact support.');
   let r;
   try { r = await otp.send({ phone, ip: clientIp(req), pepper: k.pepper, sms: k.sms }); } catch (e) {
     console.error('OTP send failed:', e.message);
@@ -999,6 +1015,7 @@ route('POST', '/api/auth/otp/send', async (req, res, { body }) => {
   send(res, 200, { ok: true, resendIn: r.resendIn, testMode: k.sms.provider === 'console' });
 });
 route('POST', '/api/auth/otp/verify', (req, res, { body }) => {
+  if (!otpProviderAllowed(secrets().sms)) return fail(res, 503, 'SMS verification is unavailable. Please contact support.');
   const phone = str(body.phone, 15);
   if (!/^[6-9]\d{9}$/.test(phone) || !/^\d{6}$/.test(str(body.otp, 6))) return fail(res, 400, 'Enter the 6-digit OTP');
   const r = otp.verify({ phone, code: str(body.otp, 6), pepper: secrets().pepper });
@@ -2172,13 +2189,18 @@ route('GET', '/api/admin/integrations', (req, res) => {
     readiness: (() => {
       const real = (db.vendors || []).filter(v => !v.sample);
       return { realVendors: real.length, verifiedReal: real.filter(v => v.verified && v.active).length, sampleVendors: (db.vendors || []).length - real.length,
-        showSamples: db.settings.showSamples !== false, sitePhone: !!db.settings.phone, siteWhatsapp: !!db.settings.whatsapp, upi: !!db.settings.upiId,
+        showSamples: !publicProduction && db.settings.showSamples !== false, sitePhone: !!db.settings.phone, siteWhatsapp: !!db.settings.whatsapp, upi: !!db.settings.upiId,
         business: !!(db.settings.business && db.settings.business.legalName && db.settings.business.address && db.settings.email) };
     })(),
   });
 }, { admin: true });
 route('PUT', '/api/admin/integrations', (req, res, { body }) => {
   const s = db.secrets || (db.secrets = {});
+  const selectedProvider = ['console', 'fast2sms', 'custom'].includes(body.smsProvider) ? body.smsProvider : s.smsProvider;
+  const provider = process.env.SMS_PROVIDER || selectedProvider || 'console';
+  if ((body.otpLogin || body.otpRequired) && !otpProviderAllowed({ provider })) {
+    return fail(res, 400, 'Configure an SMS provider before enabling OTP in production');
+  }
   for (const k of ['onlinePayments', 'otpLogin', 'otpRequired']) if (k in body) db.settings[k] = !!body[k];
   if ('upiId' in body) {
     const id = str(body.upiId, 60);
@@ -2195,7 +2217,7 @@ route('PUT', '/api/admin/integrations', (req, res, { body }) => {
   // secret fields are write-only: an empty value keeps the saved one
   if (body.rzpKeySecret) s.rzpKeySecret = str(body.rzpKeySecret, 100);
   if (body.rzpWebhookSecret) s.rzpWebhookSecret = str(body.rzpWebhookSecret, 100);
-  if (['console', 'fast2sms', 'custom'].includes(body.smsProvider)) s.smsProvider = body.smsProvider;
+  if (selectedProvider) s.smsProvider = selectedProvider;
   if (body.smsApiKey) s.smsApiKey = str(body.smsApiKey, 200);
   if (body.smsUrlTemplate && !body.smsUrlTemplate.includes('••••')) s.smsUrlTemplate = str(body.smsUrlTemplate, 600);
   // Supabase: project URL, service-role key and (optional) access token; the keys are write-only like the others
@@ -2207,7 +2229,11 @@ route('PUT', '/api/admin/integrations', (req, res, { body }) => {
   }
   if (body.sbServiceKey) s.sbServiceKey = str(body.sbServiceKey, 600);
   if (body.sbAccessToken) s.sbAccessToken = str(body.sbAccessToken, 200);
-  if (db.settings.onlinePayments && !onlinePayEnabled()) { db.settings.onlinePayments = false; save(); return fail(res, 400, 'Enter Razorpay Key ID and Key Secret before turning on online payments'); }
+  if (db.settings.onlinePayments && !onlinePayEnabled()) {
+    db.settings.onlinePayments = false;
+    save();
+    return fail(res, 400, publicProduction ? 'Enter live Razorpay keys and a webhook secret before enabling online payments' : 'Enter Razorpay Key ID and Key Secret before turning on online payments');
+  }
   save();
   if (JSON.stringify([s.sbUrl, s.sbServiceKey, s.sbAccessToken]) !== sbWas) sb.start().catch(() => {}); // connect / copy everything now
   send(res, 200, { ok: true });
@@ -2221,6 +2247,7 @@ route('POST', '/api/admin/integrations/test-sms', async (req, res, { body }) => 
   const phone = str(body.phone, 15);
   if (!/^[6-9]\d{9}$/.test(phone)) return fail(res, 400, 'Enter a valid 10-digit mobile number');
   const k = secrets();
+  if (!otpProviderAllowed(k.sms)) return fail(res, 400, 'Configure an SMS provider before sending a test in production');
   try { await otp.deliver(k.sms, phone, '123456'); send(res, 200, { ok: true, message: k.sms.provider === 'console' ? 'Test mode: OTP 123456 printed in the server window' : `Test SMS with OTP 123456 sent to ${phone}` }); } catch (e) { fail(res, 400, 'SMS failed: ' + e.message); }
 }, { admin: true });
 
@@ -2395,7 +2422,7 @@ route('POST', '/api/admin/supabase/sync', async (req, res) => {
 }, { admin: true });
 
 const vendorApi = setupVendors({
-  route, db: () => db, save, send, fail, str, num, uid, now, today, currentUser, hashPassword, bump, clientIp, vbMoney,
+  route, db: () => db, save, send, fail, str, num, uid, now, today, currentUser, hashPassword, bump, clientIp, vbMoney, publicProduction,
 });
 
 // ---------- Server ----------

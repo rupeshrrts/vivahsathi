@@ -328,9 +328,14 @@ function renderChrome() {
   $('#tagline').textContent = s.tagline;
   $('#announce').textContent = s.announcement; $('#announce').classList.toggle('hide', !s.announcement);
   $('#year').textContent = new Date().getFullYear();
+  $('#footPhone').classList.toggle('hide', !s.phone);
   $('#footPhone').textContent = '📞 ' + s.phone; $('#footPhone').href = 'tel:' + s.phone.replace(/\s/g, '');
+  $('#footMail').classList.toggle('hide', !s.email);
   $('#footMail').textContent = '✉️ ' + s.email; $('#footMail').href = 'mailto:' + s.email;
-  $('#footWa').href = $('#waFloat').href = 'https://wa.me/' + s.whatsapp;
+  for (const link of [$('#footWa'), $('#waFloat')]) {
+    link.classList.toggle('hide', !s.whatsapp);
+    link.href = 'https://wa.me/' + s.whatsapp;
+  }
   drawSideCats();
   $('#catbar').innerHTML = `<a class="cat-pill vendors-pill" data-cat="vendors" href="#/vendors"><span class="ic">🤝</span><span>All Vendors</span></a><a class="cat-pill ark-pill" data-cat="arkestra" href="#/arkestra"><span class="ic">🎤</span><span>Orchestra</span></a><a class="cat-pill car-pill" data-cat="cars" href="#/cars"><span class="ic">🚗</span><span>Car Rental</span></a>` + S.meta.categories.map(c => `<a class="cat-pill" data-cat="${c.id}" href="${SHOP_PAGE[c.id] || `#/c/${c.id}`}"><span class="ic" style="background:${h(c.color)}">${h(c.emoji)}${c.image ? `<img src="${h(c.image)}" alt="" loading="lazy" onerror="this.remove()">` : ''}</span><span>${h((NICE[c.id] || c.name).split('&')[0].split(',')[0].trim())}</span>${c.off ? `<em class="off-badge">${c.off}% off</em>` : ''}</a>`).join('');
   $('#footCats').innerHTML = S.meta.categories.slice(0, 7).map(c => `<a href="#/c/${c.id}">${h(c.name)}</a>`).join('');
@@ -678,7 +683,7 @@ function viewHome() {
   const rows = S.meta.categories.map(c => ({ c, items: all.filter(p => p.cat === c.id) })).filter(r => r.items.length);
   const evs = sideEvents(Object.keys(EVENT_INFO).filter(e => e !== 'Other' && S.meta.events.includes(e)));
   app().innerHTML = `
-    <section class="hero home-hero" id="hero">
+    ${s.banners.length ? `<section class="hero home-hero" id="hero">
       ${s.banners.map((b, i) => `<div class="slide ${i ? '' : 'on'}" ${i ? 'inert' : ''}>
         <div class="txt"><h1>${h(b.title)}</h1><p>${h(b.subtitle)}</p>${b.cta ? `<a class="btn btn-gold btn-lg" href="${h(b.link || '#/')}">${h(b.cta)}</a>` : ''}</div>
         <div class="hero-scene" aria-hidden="true"><div class="hero-stage">
@@ -694,7 +699,7 @@ function viewHome() {
       </div>`).join('')}
       ${petals(8)}
       ${s.banners.length > 1 ? `<button class="hero-nav prev" data-hero="-1" aria-label="Previous">‹</button><button class="hero-nav next" data-hero="1" aria-label="Next">›</button><div class="dots">${s.banners.map((_, i) => `<button data-dot="${i}" class="${i ? '' : 'on'}" aria-label="Slide ${i + 1}"></button>`).join('')}</div>` : ''}
-    </section>
+    </section>` : `<section class="panel empty"><h1>${h(s.siteName)}</h1><p class="muted">Find wedding services for your function date and district.</p><a class="btn btn-primary" href="#/vendors">Browse vendors</a></section>`}
     <div class="steps">
       <div><span class="n">1</span><span><b>Choose your function</b>Haldi, Mehndi, Tilak, Shaadi…</span></div>
       <div><span class="n">2</span><span><b>Tap Add / Book</b>Pick date — no login needed</span></div>
@@ -721,8 +726,8 @@ function viewHome() {
 
     ${rows.map(r => rowSection(r.c.name, r.c.nameHi, r.items, '#/c/' + r.c.id)).join('')}
 
-    <section class="sec wa-band"><div><h3>Order on call or WhatsApp</h3><p>Not sure what you need? Tell us your function & date — we'll make the list for you.</p></div>
-      <div class="cta-row" style="flex:0 0 auto"><a class="btn btn-wa" target="_blank" rel="noopener" href="${waLink('Namaste, mujhe shaadi ke liye saman / booking chahiye.')}">💬 WhatsApp</a><a class="btn btn-gold" href="tel:${h(s.phone.replace(/\s/g, ''))}">📞 ${h(s.phone)}</a></div></section>`;
+    ${s.phone || s.whatsapp ? `<section class="sec wa-band"><div><h3>Get help with your booking</h3><p>Tell us your function and date.</p></div>
+      <div class="cta-row" style="flex:0 0 auto">${s.whatsapp ? `<a class="btn btn-wa" target="_blank" rel="noopener" href="${waLink('Namaste, mujhe shaadi ke liye saman / booking chahiye.')}">💬 WhatsApp</a>` : ''}${s.phone ? `<a class="btn btn-gold" href="tel:${h(s.phone.replace(/\s/g, ''))}">📞 ${h(s.phone)}</a>` : ''}</div></section>` : ''}`;
 
   const slides = $$('.slide'), dots = $$('.dots button');
   let cur = 0;
@@ -1495,7 +1500,7 @@ async function viewCheckout() {
   const payNowFor = t => pay === 'online-full' ? t.total : pay === 'online-advance' ? advanceNow(t) : 0;
   const vLabel = vgs.length ? `${vgs.length} vendor booking${vgs.length > 1 ? 's' : ''}` : '';
   const placeBtn = t => `<button class="btn btn-gold btn-block btn-lg" id="placeBtn" ${placing ? 'disabled' : ''}>${placing ? 'Submitting…' : !lines.length ? 'Request Booking' : payNowFor(t) ? `🔒 Pay ${inr(payNowFor(t))} & Place Order` : `Confirm Order · ${inr(t.total + vt)}`}</button>
-    <p class="small muted" style="text-align:center;margin:8px 0 0">${vgs.length ? `${lines.length ? 'Shop order + ' : ''}${vLabel} are placed together. ` : ''}${payNowFor(t) ? 'Secure payment by Razorpay · UPI, cards, net banking' : 'Vendors and our team call you to confirm.'}</p>
+    <p class="small muted" style="text-align:center;margin:8px 0 0">${vgs.length ? `Send ${vLabel} for confirmation. Pay for vendor services after confirmation. ` : ''}${lines.length && payNowFor(t) ? 'Shop payment is handled by Razorpay.' : ''}</p>
     <p class="small muted" style="text-align:center;margin:4px 0 0">By placing the order you agree to our <a class="link" href="#/terms">Terms & Conditions</a> and <a class="link" href="#/policy">Cancellation, Return & Refund Policy</a>.</p>`;
   const updateSummary = () => {
     const distId = addrIdx >= 0 ? addrs[addrIdx].district : $('select[name=district]', $('#addrForm')).value;
@@ -1516,7 +1521,7 @@ async function viewCheckout() {
         <form id="addrForm" class="${addrIdx === -1 ? '' : 'hide'}" style="margin-top:6px">${addressForm()}
           ${S.user ? '<label class="small"><input type="checkbox" name="saveAddress" checked> Save this address</label>' : ''}</form>
       </div></section>
-      <details class="panel step checkout-review"><summary class="step-h"><span class="n">2</span> Review selection (${lines.length + vgs.reduce((a, g) => a + g.lines.length, 0)} items)</summary><div class="step-b">
+      <details class="panel step checkout-review" ${vgs.length ? 'open' : ''}><summary class="step-h"><span class="n">2</span> Review selection (${lines.length + vgs.reduce((a, g) => a + g.lines.length, 0)} items)</summary><div class="step-b">
         ${realSide() ? `<div class="side-line" style="margin:0 0 8px">${sideName(S.side)} <span class="small muted">· sent with every booking</span> <a class="link small" href="#/events">Change</a></div>` : sideAsk()}
         ${lines.map(l => `<div class="oi">${pPhoto(l.p)}<div style="flex:1"><b>${h(l.p.name)}</b><div class="small muted">${l.qty} × ${inr(l.p.price)} / ${h(l.p.unit)}${l.event ? ` · ${datesChips(l)}` : ''}</div>${extrasHtml(l)}</div><b>${inr(lineAmt(l))}</b></div>`).join('')}
         ${vgs.map(g => `<div class="co-vgroup"><div class="co-vh">🤝 <b>${h(g.vendorName)}</b> · 📅 ${fmtDate(g.date)}${g.eventTime ? ` · ⏰ ${h(g.eventTime)}` : ''}${g.event ? ` · <span class="chip chip-ev">${h(evShort(g.event))}</span>` : ''}${g.canDeliver ? ` · ${g.fulfil === 'delivery' ? (g.rental ? '🚚 Delivery & set-up' : '🚚 Delivery') : '🏪 Pickup'}` : ''}<span style="margin-left:auto"><b>${inr(g.total)}</b></span></div>
@@ -1556,7 +1561,7 @@ async function viewCheckout() {
       address = Object.fromEntries(fd); saveAddress = fd.get('saveAddress') === 'on'; delete address.saveAddress;
     }
     const note = $('#orderNote').value;
-    const method = pay, online = method.startsWith('online');
+    const method = pay, online = lines.length > 0 && method.startsWith('online');
     const side = realSide();
     const form = $('#addrForm');
     placing = true;

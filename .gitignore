@@ -14,6 +14,7 @@ frontend/uploads/*
 
 # dependencies, logs, OS / editor files
 node_modules/
+/storage/
 *.log
 npm-debug.log*
 .DS_Store

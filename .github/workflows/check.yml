@@ -9,6 +9,8 @@ jobs:
         with:
           node-version-file: .nvmrc
       - run: npm run check
+      - run: npm run check:bookings
+      - run: npm run check:bookings -- --public
       # boots the server on a fresh sample database and checks it answers
       - run: |
           node backend/server.js &

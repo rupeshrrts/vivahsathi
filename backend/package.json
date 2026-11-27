@@ -1,7 +1,7 @@
 {
   "name": "vivahsathi-backend",
   "version": "1.0.0",
-  "type": "module",
+  "type": "commonjs",
   "description": "VivahSathi Backend REST API — Managed Aggregator for Rural Wedding Services",
   "main": "server.js",
   "scripts": {

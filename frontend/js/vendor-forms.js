@@ -523,7 +523,17 @@ const VF = (() => {
         try { B = await o.api(`${o.base}/visits/${b.dataset.svid}`, { method: 'PUT', body }); toast(to === 'confirmed' ? 'Visit fixed ✓ — call the family to tell the time' : to === 'done' ? 'Marked as measured ✓' : 'Visit cancelled'); draw(); } catch (e) { toast(e.message, true); }
       }));
       $$('[data-bs]', el).forEach(b => b.addEventListener('click', async () => {
-        try { await o.api(`${o.base}/bookings/${b.dataset.b}`, { method: 'PUT', body: { status: b.dataset.bs } }); toast('Booking updated ✓'); await reload(); draw(); o.onChange && o.onChange(); } catch (e) { toast(e.message, true); }
+        const status = b.dataset.bs;
+        const message = { confirmed: 'Confirm this booking? You can include arrival, setup, or pickup details.', rejected: 'Decline this request? You can tell the customer why.', cancelled: 'Cancel this booking? You can tell the customer why.' }[status];
+        const vendorNote = message ? prompt(message + '\nMessage for the customer (optional):', '') : undefined;
+        if (vendorNote === null || (status === 'completed' && !confirm('Mark this booking completed? Confirm that all services have been provided.'))) return;
+        b.disabled = true;
+        try {
+          await o.api(`${o.base}/bookings/${b.dataset.b}`, { method: 'PUT', body: { status, ...(vendorNote?.trim() ? { vendorNote } : {}) } });
+          toast(status === 'confirmed' ? 'Booking confirmed. Call or message the customer to coordinate.' : 'Booking updated ✓');
+          await reload(); draw(); o.onChange?.();
+        } catch (e) { toast(e.message, true); }
+        finally { b.disabled = false; }
       }));
       $$('[data-act="vf-add"]', el).forEach(b => b.addEventListener('click', () => listingForm(null, b.dataset.kind || '', !!b.dataset.rental)));
       const tmAdd = $('[data-act="tm-add"]', el); if (tmAdd) tmAdd.addEventListener('click', () => memberForm(null));

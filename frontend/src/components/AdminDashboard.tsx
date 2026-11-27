@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { Booking, Vendor, Category, Package, Language } from '../types';
 import { translations } from '../translations';
-import { LogOut, LayoutDashboard, Calendar, Users, FolderKanban, Plus, Printer, X, Sparkles } from 'lucide-react';
+import { LogOut, LayoutDashboard, Calendar, Users, FolderKanban, Plus, Printer, X } from 'lucide-react';
 import { VivahSathiLogo } from './VivahSathiLogo';
 
 interface AdminDashboardProps {

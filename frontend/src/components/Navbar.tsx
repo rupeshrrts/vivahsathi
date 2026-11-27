@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, UserCheck, Menu, X, Globe, LogIn, Sparkles } from 'lucide-react';
+import { UserCheck, Menu, X, Globe, LogIn, Sparkles } from 'lucide-react';
 import type { Language } from '../types';
 import { translations } from '../translations';
 import { VivahSathiLogo } from './VivahSathiLogo';

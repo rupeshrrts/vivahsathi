@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: vivah-saathi
+    runtime: node
+    region: singapore
+    plan: starter
+    branch: main
+    numInstances: 1
+    autoDeployTrigger: checksPass
+    buildCommand: npm run check && npm run check:bookings -- --public
+    startCommand: npm start
+    healthCheckPath: /readyz
+    disk:
+      name: vivah-data
+      mountPath: /opt/render/project/src/storage
+      sizeGB: 5
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DEMO_DATA
+        value: "0"
+      - key: TRUST_PROXY
+        value: "1"
+      - key: DATA_DIR
+        value: /opt/render/project/src/storage/data
+      - key: UPLOAD_DIR
+        value: /opt/render/project/src/storage/uploads
+      - key: ADMIN_PASSWORD
+        generateValue: true

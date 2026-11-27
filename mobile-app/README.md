@@ -2,6 +2,39 @@
 
 The Expo React Native app loads the existing mobile storefront in a WebView. The shop, service and vendor bookings, packages, cart, checkout and order tracking use the same Node server and data as the website. Storefront updates show up in the app after it reloads. The device keeps its own cart and login session.
 
+## Build for Google Play
+
+The Android release build is an Android App Bundle (`.aab`) created with EAS Build. The app must connect to a live, public HTTPS storefront; a local laptop address is not suitable for a Play Store release.
+
+1. Deploy the store server with HTTPS and persistent storage.
+2. Create or sign in to an Expo account, then link this app to an EAS project:
+
+   ```powershell
+   npx.cmd eas-cli login
+   npx.cmd eas-cli init
+   ```
+
+3. In the EAS project, add `EXPO_PUBLIC_STORE_URL` to the **production** environment. Set it to the store's HTTPS origin, for example `https://shop.example.com` (no path or trailing route). Production builds stop with an error if this setting is missing or not HTTPS.
+4. Build a test APK first:
+
+   ```powershell
+   npx.cmd eas-cli build --platform android --profile preview
+   ```
+
+5. Install the APK on real Android devices and test sign-in, cart, checkout, payments, location, external links, and order tracking against the live server.
+6. Build the Play Store bundle:
+
+   ```powershell
+   npx.cmd eas-cli build --platform android --profile production
+   ```
+
+   EAS can create and manage the Android signing key. Keep the key and recovery information safe; future releases must use the same signing identity.
+7. Download the `.aab` from EAS and upload it to a Google Play Console internal testing track before requesting production access.
+
+The project has an app icon and adaptive icon configured. Before submitting, complete the Play Console listing (screenshots, descriptions, contact details, privacy policy URL, content rating, and Data safety form) and test the app against Play policies. This app primarily displays the existing storefront in a WebView, so Play approval is not guaranteed; the app must meet current functionality and WebView-content policies.
+
+The app's Android package name is `in.vivahsaathi.mobile`. Once an app is published, changing this identifier requires publishing a separate app. The production profile increments Android's version code for each EAS build.
+
 ## Run on a Windows laptop and an Android phone
 
 Use Node.js 20.19.4 or later. Open two terminals in the project root.

@@ -122,7 +122,7 @@ async function bookVendorCart(customer, note) {
     VS.lastBookings = r.bookings;
     return r.bookings;
   } catch (e) {
-    throw new Error(e.message + ' — please change that vendor or date in your cart. Nothing was booked yet.');
+    throw new Error(e.message + ' Check My Vendor Bookings before trying again if the connection dropped.');
   }
 }
 // a vendor booking's function and, for full-ceremony items, every rasam date
@@ -134,13 +134,13 @@ function bookingsDoneBlock(list) {
   return `<div class="box vb-done"><h3 style="margin:0 0 8px">🤝 ${list.length} vendor booking request${list.length > 1 ? 's' : ''} sent</h3>
     ${list.map(b => `<div class="vb-done-row"><div><b>#${h(b.number)}</b> · ${h(b.vendorName)} · 📅 ${fmtDate(b.date)}${vbEv(b)}<div class="small muted">${b.items.map(i => `${h(i.name)} × ${i.qty}`).join(', ')}</div>${vbRasams(b)}</div>
       <div style="display:flex;gap:6px;align-items:center"><b>${inr(b.total)}</b>${b.vendor ? `<a class="btn btn-wa btn-sm" target="_blank" rel="noopener" href="https://wa.me/91${h(b.vendor.whatsapp || b.vendor.phone)}?text=${encodeURIComponent(`Namaste, I requested booking #${b.number} for ${fmtDate(b.date)} on ${s.siteName}.`)}">💬</a>` : ''}</div></div>`).join('')}
-    <p class="small muted" style="margin:8px 0 0">Each vendor will call to confirm. Track them any time in <a class="link" href="#/vtrack">My Vendor Bookings</a>.</p></div>`;
+    <p class="small muted" style="margin:8px 0 0">Wait for each vendor to confirm before paying. Save your booking numbers and check the status in <a class="link" href="#/vtrack">My Vendor Bookings</a>.</p></div>`;
 }
 function viewVBDone() {
   const list = VS.lastBookings;
   if (!list || !list.length) { location.hash = '#/vtrack'; return; }
   app().innerHTML = `<div class="panel success"><div class="tick">✓</div><h1 style="margin:0">Booking requests sent!</h1>
-    <p class="muted">Every vendor in your cart has received your request for their date.</p>
+    <p class="muted">Your requests are now in each vendor’s booking panel.</p>
     <div style="max-width:720px;margin:0 auto;text-align:left">${bookingsDoneBlock(list)}</div>
     <div class="cta-row" style="max-width:520px;margin:16px auto 0"><a class="btn btn-primary" href="#/vtrack">📦 Track vendor bookings</a><a class="btn btn-ghost" href="#/vendors">Book more vendors</a></div></div>`;
 }
@@ -1369,7 +1369,7 @@ async function viewVendor(id, q) {
         <button class="btn btn-gold btn-block btn-lg" id="vbGo" ${blocked || stop || !ls.length ? 'disabled' : ''}>Book Now →</button>
         ${ls.length && !blocked && !stop ? `<a class="btn btn-wa btn-block" target="_blank" rel="noopener" href="${waBook(ls, sub + del)}">💬 Book on WhatsApp instead</a>` : ''}
       </div>
-      ${ls.length && !blocked ? `<p class="small vb-hold">${new Set(ls.flatMap(x => (x.dates || []).map(y => y.date))).size > 1 ? 'All your dates are' : 'Your date is'} held for <b>48 hours</b> while the vendor confirms. If they don't answer in time, the date is released and we tell you, so you can book someone else.</p>` : ''}
+      ${ls.length && !blocked ? `<p class="small vb-hold">Your selected dates are held for up to <b>48 hours</b> while the vendor responds. Check your exact deadline in My Vendor Bookings after requesting.</p>` : ''}
       ${inCart.length && !ls.length ? `<button class="btn btn-light btn-sm btn-block" id="vbRm" style="margin-top:8px">Remove ${h(v.name)} from cart</button>` : ''}
       <p class="small muted" style="margin:10px 0 0">${tooSoon ? 'Choose a later date to book these items.' : blocked ? 'Not available on this date — pick another date in the calendar.' : 'Add several vehicles, items or vendors to the cart — then book everything together at checkout. No payment now; pay vendors directly as agreed.'}</p>
       ${others.length ? `<div class="vb-others"><b>Also in your cart:</b>${others.map(g => `<div><a class="link" href="#/v/${g.vendorId}">${h(g.vendorName)}</a> · ${shortDate(g.date)} · ${inr(g.total)}</div>`).join('')}<a class="btn btn-primary btn-sm btn-block" href="#/cart" style="margin-top:8px">View cart & book all →</a></div>` : ''}`;
@@ -1547,12 +1547,13 @@ async function viewVendor(id, q) {
 /* ---------------- Booking success, tracking, join ---------------- */
 const VB_LABEL = { requested: 'Requested – waiting for vendor', confirmed: 'Confirmed by vendor', completed: 'Completed', cancelled: 'Cancelled', rejected: 'Vendor not available' };
 const vbStatus = s => `<span class="status ${{ requested: 'st-placed', confirmed: 'st-confirmed', completed: 'st-delivered', cancelled: 'st-cancelled', rejected: 'st-cancelled' }[s]}">${VB_LABEL[s]}</span>`;
-const whenTxt = iso => new Date(iso).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
+const whenTxt = iso => new Date(iso).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }) + ' IST';
 // waiting: until when the date is held; released: the vendor did not answer; confirmed: the advance to lock it
 function vbHoldLine(b) {
   if (b.expired) return `<div class="vb-hold vb-gone">⌛ ${h(b.vendorName)} did not answer in time, so the date was released. Please book another vendor for ${fmtDate(b.date)}.</div>`;
-  if (b.status === 'requested' && b.answerBy) return `<div class="vb-hold">⏳ Date held for you till <b>${whenTxt(b.answerBy)}</b> while ${h(b.vendorName)} confirms.${b.advance ? ` After confirming, pay the advance <b>${inr(b.advance)}</b> to lock the date.` : ''}</div>`;
-  if (b.status === 'confirmed' && b.advance && !(b.money || {}).paid) return `<div class="vb-adv">🔒 Advance to lock the date: <b>${inr(b.advance)}</b> — ${S.meta.settings.payments.online ? 'pay it online below, or' : ''} pay the vendor directly (UPI / cash) and keep the receipt. The rest on the day.</div>`;
+  if (b.status === 'requested' && b.answerBy) return `<div class="vb-hold">⏳ Your selection is held until <b>${whenTxt(b.answerBy)}</b> while ${h(b.vendorName)} responds.${b.advance ? ` The requested advance is <b>${inr(b.advance)}</b>, payable after confirmation.` : ''}</div>`;
+  if (b.status === 'confirmed' && b.advance && !(b.money || {}).paid) return `<div class="vb-adv">Advance: <b>${inr(b.advance)}</b>. Confirm payment and service arrangements with the vendor. ${S.meta.settings.payments.online ? 'You can pay online below or pay the vendor directly.' : 'Pay the vendor directly and keep the receipt.'}</div>`;
+  if (b.status === 'confirmed') return '<div class="vb-hold">Your vendor has confirmed. Contact them to agree on arrival, setup, or pickup details.</div>';
   return '';
 }
 // paid online / pay online now / refund on its way — once the vendor has confirmed
@@ -1568,11 +1569,13 @@ function vbPayLine(b) {
   return paidTxt || owed || btns ? `<div class="vb-pay">${paidTxt ? `<div class="small">${paidTxt}</div>` : ''}${owed}${btns}</div>` : '';
 }
 function vbCard(b, vendor) {
+  const fulfilment = { delivery: 'Delivery to your address', pickup: 'Pickup from vendor', 'on-site': 'Service at your venue' }[b.fulfilment];
+  const wa = vendor && (vendor.whatsapp || vendor.phone);
   return `<div class="order-card"><div class="order-top"><div><b>#${h(b.number)}</b> · ${h(b.vendorName)} · 📅 ${fmtDate(b.date)}${vbEv(b)}</div>${vbStatus(b.status)}</div>
     <div class="order-items">${b.items.map(i => `<div class="oi" style="justify-content:space-between"><span>${h(i.name)} × ${i.qty} ${h(i.unit)}${(i.dates || []).length ? `<br>${datesChips(i)}` : ''}</span><b>${inr(i.price * i.qty)}</b></div>`).join('')}${b.deliveryCharge ? `<div class="oi" style="justify-content:space-between"><span>Delivery</span><b>${inr(b.deliveryCharge)}</b></div>` : ''}</div>
     ${b.vendorNote ? `<div class="small" style="padding:0 16px 10px"><b>Message from vendor:</b> ${h(b.vendorNote)}</div>` : ''}
     ${vbHoldLine(b)}${vbPayLine(b)}
-    <div class="order-foot"><span class="small muted">📍 ${h(b.customer.address)}, ${h(b.customer.districtName)}${vendor ? ` · Vendor 📞 <a class="link" href="tel:+91${h(vendor.phone)}">${h(vendor.phone)}</a>` : ''}</span>
+    <div class="order-foot"><span class="small muted">${fulfilment ? `<b>${fulfilment}</b><br>` : ''}${b.fulfilment === 'pickup' ? h((vendor || {}).address || 'Contact the vendor for the pickup address') : `📍 ${h(b.customer.address)}, ${h(b.customer.districtName)}`} ${vendor && vendor.phone ? ` · <a class="link" href="tel:+91${h(vendor.phone)}">Call vendor</a>` : ''}${wa ? ` · <a class="link" target="_blank" rel="noopener" href="https://wa.me/91${h(wa)}?text=${encodeURIComponent(`Namaste, I’m contacting you about booking #${b.number} for ${fmtDate(b.date)}.`)}">WhatsApp vendor</a>` : ''}</span>
       <span style="display:flex;gap:8px;align-items:center"><b>Total ${inr(b.total)}</b>${['requested', 'confirmed'].includes(b.status) ? `<button class="btn btn-light btn-sm" data-vbcancel="${h(b.number)}" data-phone="${h(b.customer.phone)}" ${(b.money || {}).held ? `data-paid="${inr(b.money.held)}"` : ''}>Cancel</button>` : ''}${b.status === 'completed' ? (b.reviewed ? '<span class="rv-done">✓ Reviewed</span>' : `<button type="button" class="btn btn-gold btn-sm" data-vrate="${h(b.number)}" data-phone="${h(b.customer.phone)}" data-name="${h(b.vendorName)}">⭐ Rate & review</button>`) : ''}</span></div></div>`;
 }
 async function viewVBSuccess(number) {

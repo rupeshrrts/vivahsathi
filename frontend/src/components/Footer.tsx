@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Language } from '../types';
 import { translations } from '../translations';
-import { Sparkles, MessageSquare, PhoneCall, ShieldCheck, Heart } from 'lucide-react';
+import { MessageSquare, PhoneCall, ShieldCheck, Heart } from 'lucide-react';
 import { VivahSathiLogo } from './VivahSathiLogo';
 
 interface FooterProps {

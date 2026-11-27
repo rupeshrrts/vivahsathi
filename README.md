@@ -81,6 +81,14 @@ The existing GitHub Actions workflow runs checks, starts the server for basic he
 
 ## CI and deployment
 
+### Render Blueprint
+
+The repository includes `render.yaml` for a single paid Render Starter web service in Singapore. It uses the Node runtime, a 5 GB persistent disk for the database, private vendor documents and public uploads, and `/readyz` for health checks. The Render build runs the clean-production booking test. Subsequent deployments from `main` wait for GitHub checks to pass.
+
+In Render, create a Blueprint from the GitHub repository's `main` branch and review the resources before applying it. Render supplies an HTTPS address and generates `ADMIN_PASSWORD`. Retrieve that variable in the service dashboard for the first login at `/admin` with mobile number `9000000000`. Store it securely and change the admin credentials as needed. Use the Render address for initial testing and add a custom domain from the service settings when available.
+
+Before inviting customers, add real business contacts and verified vendors, test a booking against the deployed service, and verify that the persistent disk retains records and uploads across a restart. Keep a separate private backup and verify restore before relying on live bookings.
+
 ### Recommended setup
 
 For a straightforward deployment, use GitHub Actions for checks and Docker builds, then run the app as **one container on a host with persistent storage**.
@@ -110,6 +118,8 @@ UPLOAD_DIR=/mnt/vivah/uploads
 Do not run multiple replicas until the application has been migrated to shared transactional storage, shared session and rate-limit state, and shared object storage. Supabase sync is useful for recovery, but it does not make the JSON file a multi-server database.
 
 ### Docker
+
+A new database in the production container starts with an empty catalog and vendor list. Add real business contacts, inventory, prices, and verified vendors before announcing the site. If reusing a database from a demo, review its existing products, packages, and contact details before opening it to customers. Production hides sample vendor profiles, blocks console OTP, and requires live Razorpay keys and a webhook secret to enable online checkout. For an isolated demo or staging database, set `DEMO_DATA=1` to enable sample data on first start and allow test integrations.
 
 Build and run the container:
 
